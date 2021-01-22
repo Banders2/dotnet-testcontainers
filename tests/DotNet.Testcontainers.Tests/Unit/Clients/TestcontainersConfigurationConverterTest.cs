@@ -1,9 +1,9 @@
-namespace DotNet.Testcontainers.Tests.Unit
+namespace DotNet.Testcontainers.Tests.Unit.Clients
 {
   using System.Collections.Generic;
   using System.Linq;
   using DotNet.Testcontainers.Clients;
-  using DotNet.Testcontainers.Configurations;
+  using DotNet.Testcontainers.Configurations.Containers;
   using Moq;
   using Xunit;
 

@@ -1,5 +1,6 @@
 namespace DotNet.Testcontainers.Containers
 {
+  using Configurations.Containers;
   using DotNet.Testcontainers.Configurations;
   using JetBrains.Annotations;
   using Microsoft.Extensions.Logging;

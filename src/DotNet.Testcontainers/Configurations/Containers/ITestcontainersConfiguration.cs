@@ -1,9 +1,10 @@
-namespace DotNet.Testcontainers.Configurations
+namespace DotNet.Testcontainers.Configurations.Containers
 {
   using System;
   using System.Collections.Generic;
   using System.Threading;
   using System.Threading.Tasks;
+  using DotNet.Testcontainers.Configurations.Images;
   using DotNet.Testcontainers.Containers;
   using DotNet.Testcontainers.Images;
   using DotNet.Testcontainers.Network;
@@ -15,9 +16,14 @@ namespace DotNet.Testcontainers.Configurations
   public interface ITestcontainersConfiguration
   {
     /// <summary>
-    /// Gets a value indicating whether the Testcontainer is removed on finalize or not.
+    /// If true, the Testcontainer is removed automatically by the Docker daemon when stopped.
     /// </summary>
-    bool CleanUp { get; }
+    bool? AutoRemove { get; }
+
+    /// <summary>
+    /// If true, the Testcontainer will be started in privileged mode.
+    /// </summary>
+    bool? Privileged { get; }
 
     /// <summary>
     /// Gets the Docker API endpoint.

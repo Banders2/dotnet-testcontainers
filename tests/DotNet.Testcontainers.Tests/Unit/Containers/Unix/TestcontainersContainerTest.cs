@@ -1,6 +1,7 @@
 namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
 {
   using System;
+  using System.Diagnostics;
   using System.Globalization;
   using System.IO;
   using System.Net;
@@ -16,7 +17,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
 
   public static class TestcontainersContainerTest
   {
-    private static readonly string TempDir = Environment.GetEnvironmentVariable("AGENT_TEMPDIRECTORY") ?? "."; // We cannot use `Path.GetTempPath()` on macOS, see: https://github.com/common-workflow-language/cwltool/issues/328.
+    private static readonly string TempDir = Environment.GetEnvironmentVariable("AGENT_TEMPDIRECTORY") ?? Directory.GetCurrentDirectory(); // We cannot use `Path.GetTempPath()` on macOS, see: https://github.com/common-workflow-language/cwltool/issues/328.
 
     [Collection(nameof(Testcontainers))]
     public sealed class WithConfiguration
@@ -38,8 +39,6 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
           .Build();
 
         // When
-        await testcontainer.StartAsync();
-        await testcontainer.StopAsync();
         await testcontainer.DisposeAsync();
 
         // Then
@@ -58,7 +57,6 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
         // When
         await using (testcontainer)
         {
-          await testcontainer.StartAsync();
         }
 
         // Then
@@ -451,6 +449,62 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
           Assert.Equal(0, (await testcontainer.ExecAsync(new[] { "/bin/sh", "-c", $"test \"$(cat {dayOfWeekFilePath})\" = \"{dayOfWeek}\"" })).ExitCode);
           Assert.Equal(0, (await testcontainer.ExecAsync(new[] { "/bin/sh", "-c", $"stat {dayOfWeekFilePath} | grep 0600" })).ExitCode);
         }
+      }
+
+      [Fact]
+      public async Task AutoRemoveFalseShouldNotRemoveContainer()
+      {
+        // Given
+        var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
+          .WithImage("alpine")
+          .WithAutoRemove(false)
+          .WithCommand("/bin/sh", "-c", "tail -f /dev/null");
+
+        // When
+        // Then
+        await using (IDockerContainer testcontainer = testcontainersBuilder.Build())
+        {
+          await testcontainer.StartAsync();
+          await testcontainer.StopAsync();
+
+          var dockerPsStdOut = await DockerPsAqNoTrunc();
+
+          Assert.Contains(testcontainer.Id, dockerPsStdOut);
+        }
+      }
+
+      [Fact]
+      public async Task AutoRemoveTrueShouldRemoveContainer()
+      {
+        // Given
+        var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
+          .WithImage("alpine")
+          .WithAutoRemove(true)
+          .WithCommand("/bin/sh", "-c", "tail -f /dev/null");
+
+        // When
+        // Then
+        await using (IDockerContainer testcontainer = testcontainersBuilder.Build())
+        {
+          await testcontainer.StartAsync();
+          var containerId = testcontainer.Id;
+
+          await testcontainer.StopAsync();
+
+          var dockerPsStdOut = await DockerPsAqNoTrunc();
+
+          Assert.DoesNotContain(containerId, dockerPsStdOut);
+        }
+      }
+
+      private static async Task<string> DockerPsAqNoTrunc()
+      {
+        using var dockerPs = new Process { StartInfo = { FileName = "docker", Arguments = "ps -aq --no-trunc" } };
+        dockerPs.StartInfo.RedirectStandardOutput = true;
+        Assert.True(dockerPs.Start());
+
+        var dockerPsStdOut = await dockerPs.StandardOutput.ReadToEndAsync();
+        return dockerPsStdOut;
       }
     }
   }

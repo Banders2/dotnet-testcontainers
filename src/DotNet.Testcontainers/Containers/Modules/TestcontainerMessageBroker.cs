@@ -1,7 +1,9 @@
 namespace DotNet.Testcontainers.Containers
 {
+  using Configurations.Containers;
   using DotNet.Testcontainers.Configurations;
   using Microsoft.Extensions.Logging;
+  using Modules;
 
   /// <summary>
   /// This class represents an extended configured and created Testcontainer for message brokers.

@@ -1,6 +1,8 @@
 namespace DotNet.Testcontainers.Builders
 {
+  using System;
   using System.Threading.Tasks;
+  using Configurations;
   using DotNet.Testcontainers.Images;
   using JetBrains.Annotations;
 
@@ -50,9 +52,26 @@ namespace DotNet.Testcontainers.Builders
     IImageFromDockerfileBuilder WithDeleteIfExists(bool deleteIfExists);
 
     /// <summary>
+    /// Add a label to the resulting image.
+    /// </summary>
+    /// <param name="labelName">Name of the label.</param>
+    /// <param name="value">Value of the label.</param>
+    /// <returns>A configured instance of <see cref="IImageFromDockerfileBuilder" />.</returns>
+    [PublicAPI]
+    IImageFromDockerfileBuilder WithLabel(string labelName, string value);
+
+    /// <summary>
+    /// Sets the resource reaper session id for this image.
+    /// The <see cref="ResourceReaper"/> will make sure to delete the image after the tests have finished if it was not deleted explicitly.
+    /// </summary>
+    /// <param name="resourceReaperSessionId">The session id of the <see cref="ResourceReaper"/> instance.</param>
+    [PublicAPI]
+    IImageFromDockerfileBuilder WithResourceReaperSessionId(Guid? resourceReaperSessionId);
+
+    /// <summary>
     /// Builds the instance of <see cref="IImageFromDockerfileBuilder" /> with the given configuration.
     /// </summary>
-    /// <returns>A configured instance of <see cref="IImageFromDockerfileBuilder" />.</returns>
+    /// <returns>FullName of the created image.</returns>
     [PublicAPI]
     Task<string> Build();
   }

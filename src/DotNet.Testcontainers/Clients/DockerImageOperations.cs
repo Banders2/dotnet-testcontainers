@@ -7,7 +7,7 @@ namespace DotNet.Testcontainers.Clients
   using System.Threading;
   using System.Threading.Tasks;
   using Docker.DotNet.Models;
-  using DotNet.Testcontainers.Configurations;
+  using DotNet.Testcontainers.Configurations.Images;
   using DotNet.Testcontainers.Images;
   using Microsoft.Extensions.Logging;
 
@@ -28,12 +28,6 @@ namespace DotNet.Testcontainers.Clients
     {
       return (await this.Docker.Images.ListImagesAsync(new ImagesListParameters { All = true }, ct)
         .ConfigureAwait(false)).ToArray();
-    }
-
-    public Task<IEnumerable<ImagesListResponse>> GetOrphanedObjects(CancellationToken ct = default)
-    {
-      IEnumerable<ImagesListResponse> images = Array.Empty<ImagesListResponse>();
-      return Task.FromResult(images);
     }
 
     public async Task<ImagesListResponse> ByIdAsync(string id, CancellationToken ct = default)
@@ -111,6 +105,7 @@ namespace DotNet.Testcontainers.Clients
       {
         Dockerfile = configuration.Dockerfile,
         Tags = new[] { image.FullName },
+        Labels = configuration.Labels.ToDictionary(kv => kv.Key, kv => kv.Value),
       };
 
       using (var dockerFileStream = new FileStream(dockerFileArchive.Tar(), FileMode.Open))

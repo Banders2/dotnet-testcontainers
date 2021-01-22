@@ -8,6 +8,8 @@ namespace DotNet.Testcontainers.Builders
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Configurations;
+  using DotNet.Testcontainers.Configurations.Containers;
+  using DotNet.Testcontainers.Configurations.Images;
   using DotNet.Testcontainers.Containers;
   using DotNet.Testcontainers.Images;
   using DotNet.Testcontainers.Network;
@@ -235,8 +237,29 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc />
     public ITestcontainersBuilder<TDockerContainer> WithCleanUp(bool cleanUp)
     {
-      return Build(this, Apply(cleanUp: cleanUp))
-        .WithLabel(TestcontainersClient.TestcontainersCleanUpLabel, cleanUp.ToString());
+      if (cleanUp)
+      {
+        if (string.IsNullOrWhiteSpace(this.configuration.Labels[ResourceReaper.ResourceReaperSessionLabel]))
+        {
+          return this.WithResourceReaperSessionId(ResourceReaper.DefaultSessionId);
+        }
+
+        return this;
+      }
+
+      return this.WithResourceReaperSessionId(null);
+    }
+
+    /// <inheritdoc />
+    public ITestcontainersBuilder<TDockerContainer> WithAutoRemove(bool autoRemove)
+    {
+      return Build(this, Apply(autoRemove: autoRemove));
+    }
+
+    /// <inheritdoc />
+    public ITestcontainersBuilder<TDockerContainer> WithPrivileged(bool privileged)
+    {
+      return Build(this, Apply(privileged: privileged));
     }
 
     /// <inheritdoc />
@@ -267,6 +290,12 @@ namespace DotNet.Testcontainers.Builders
     public ITestcontainersBuilder<TDockerContainer> WithStartupCallback(Func<IRunningDockerContainer, CancellationToken, Task> startupCallback)
     {
       return Build(this, Apply(startupCallback: startupCallback));
+    }
+
+    /// <inheritdoc />
+    public ITestcontainersBuilder<TDockerContainer> WithResourceReaperSessionId(Guid? resourceReaperSessionId)
+    {
+      return this.WithLabel(ResourceReaper.ResourceReaperSessionLabel, resourceReaperSessionId?.ToString("D"));
     }
 
     /// <inheritdoc />
@@ -305,7 +334,8 @@ namespace DotNet.Testcontainers.Builders
       IOutputConsumer outputConsumer = null,
       IEnumerable<IWaitUntil> waitStrategies = null,
       Func<ITestcontainersContainer, CancellationToken, Task> startupCallback = null,
-      bool cleanUp = true)
+      bool? autoRemove = null,
+      bool? privileged = null)
     {
       return new TestcontainersConfiguration(
         endpoint,
@@ -325,7 +355,8 @@ namespace DotNet.Testcontainers.Builders
         outputConsumer,
         waitStrategies,
         startupCallback,
-        cleanUp);
+        autoRemove,
+        privileged);
     }
 
 #pragma warning restore S107
@@ -335,7 +366,8 @@ namespace DotNet.Testcontainers.Builders
       ITestcontainersConfiguration next,
       Action<TDockerContainer> moduleConfiguration = null)
     {
-      var cleanUp = next.CleanUp && previous.configuration.CleanUp;
+      var autoRemove = next.AutoRemove ?? previous.configuration.AutoRemove;
+      var privileged = next.Privileged ?? previous.configuration.Privileged;
       var endpoint = BuildConfiguration.Combine(next.Endpoint, previous.configuration.Endpoint);
       var image = BuildConfiguration.Combine(next.Image, previous.configuration.Image);
       var name = BuildConfiguration.Combine(next.Name, previous.configuration.Name);
@@ -373,7 +405,8 @@ namespace DotNet.Testcontainers.Builders
         outputConsumer,
         waitStrategies,
         startupCallback,
-        cleanUp);
+        autoRemove,
+        privileged);
 
       return new TestcontainersBuilder<TDockerContainer>(mergedConfiguration, moduleConfiguration ?? previous.moduleConfiguration);
     }

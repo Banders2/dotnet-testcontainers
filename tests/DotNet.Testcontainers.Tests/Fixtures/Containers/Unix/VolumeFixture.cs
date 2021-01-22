@@ -1,25 +1,38 @@
 namespace DotNet.Testcontainers.Tests.Fixtures
 {
+  using System;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Builders;
+  using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Volumes;
   using Xunit;
 
   public sealed class VolumeFixture : IAsyncLifetime
   {
-    public IDockerVolume Volume { get; }
-      = new TestcontainersVolumeBuilder()
+    public Guid ResourceReaperSessionId { get; } = Guid.NewGuid();
+
+    private ResourceReaper ResourceReaper { get; set; }
+
+    public IDockerVolume Volume { get; private set; }
+
+    public async Task InitializeAsync()
+    {
+      this.ResourceReaper = await ResourceReaper.StartNew(sessionId: this.ResourceReaperSessionId);
+
+      this.Volume = new TestcontainersVolumeBuilder()
+        .WithResourceReaperSessionId(this.ResourceReaperSessionId)
         .WithName("test-volume")
         .Build();
 
-    public Task InitializeAsync()
-    {
-      return this.Volume.CreateAsync();
+      await this.Volume.CreateAsync();
     }
 
-    public Task DisposeAsync()
+    public async Task DisposeAsync()
     {
-      return this.Volume.DeleteAsync();
+      if (this.ResourceReaper != null)
+      {
+        await this.ResourceReaper.DisposeAsync();
+      }
     }
   }
 }

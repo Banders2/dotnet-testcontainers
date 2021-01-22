@@ -257,6 +257,22 @@ namespace DotNet.Testcontainers.Builders
     ITestcontainersBuilder<TDockerContainer> WithCleanUp(bool cleanUp);
 
     /// <summary>
+    /// If true, the Testcontainer is removed automatically by the Docker daemon when stopped.
+    /// </summary>
+    /// <param name="autoRemove">True, TestcontainerTestcontainer is removed automatically by the Docker daemon when stopped.</param>
+    /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
+    [PublicAPI]
+    ITestcontainersBuilder<TDockerContainer> WithAutoRemove(bool autoRemove);
+
+    /// <summary>
+    /// If true, the Testcontainer is removed automatically by the Docker daemon when stopped.
+    /// </summary>
+    /// <param name="autoRemove">True, TestcontainerTestcontainer is removed automatically by the Docker daemon when stopped.</param>
+    /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
+    [PublicAPI]
+    ITestcontainersBuilder<TDockerContainer> WithPrivileged(bool privileged);
+
+    /// <summary>
     /// Sets the Docker API endpoint.
     /// </summary>
     /// <param name="endpoint">The Docker API endpoint.</param>
@@ -300,6 +316,15 @@ namespace DotNet.Testcontainers.Builders
     /// <remarks>Is invoked once after the Testcontainer is started and before the wait strategies are executed.</remarks>
     [PublicAPI]
     ITestcontainersBuilder<TDockerContainer> WithStartupCallback(Func<IRunningDockerContainer, CancellationToken, Task> startupCallback);
+
+    /// <summary>
+    /// Sets the resource reaper session id for this container.
+    /// The <see cref="ResourceReaper"/> will make sure to delete the container after the tests have finished if it was not deleted explicitly.
+    /// </summary>
+    /// <param name="resourceReaperSessionId">The session id of the <see cref="ResourceReaper"/> instance.</param>
+    /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
+    [PublicAPI]
+    ITestcontainersBuilder<TDockerContainer> WithResourceReaperSessionId(Guid? resourceReaperSessionId);
 
     /// <summary>
     /// Builds the instance of <see cref="ITestcontainersContainer" /> with the given configuration.

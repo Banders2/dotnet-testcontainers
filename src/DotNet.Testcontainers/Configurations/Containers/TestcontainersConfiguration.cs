@@ -1,4 +1,4 @@
-namespace DotNet.Testcontainers.Configurations
+namespace DotNet.Testcontainers.Configurations.Containers
 {
   using System;
   using System.Collections.Generic;
@@ -7,6 +7,7 @@ namespace DotNet.Testcontainers.Configurations
   using DotNet.Testcontainers.Containers;
   using DotNet.Testcontainers.Images;
   using DotNet.Testcontainers.Network;
+  using Images;
 
   /// <inheritdoc cref="ITestcontainersConfiguration" />
   public readonly struct TestcontainersConfiguration : ITestcontainersConfiguration
@@ -52,9 +53,11 @@ namespace DotNet.Testcontainers.Configurations
       IOutputConsumer outputConsumer,
       IEnumerable<IWaitUntil> waitStrategies,
       Func<ITestcontainersContainer, CancellationToken, Task> startupCallback,
-      bool cleanUp = true)
+      bool? autoRemove,
+      bool? privileged)
     {
-      this.CleanUp = cleanUp;
+      this.AutoRemove = autoRemove;
+      this.Privileged = privileged;
       this.Endpoint = endpoint;
       this.DockerRegistryAuthConfig = dockerRegistryAuthenticationConfigurations;
       this.Image = image;
@@ -77,7 +80,10 @@ namespace DotNet.Testcontainers.Configurations
 #pragma warning restore S107
 
     /// <inheritdoc />
-    public bool CleanUp { get; }
+    public bool? AutoRemove { get; }
+
+    /// <inheritdoc />
+    public bool? Privileged { get; }
 
     /// <inheritdoc />
     public Uri Endpoint { get; }

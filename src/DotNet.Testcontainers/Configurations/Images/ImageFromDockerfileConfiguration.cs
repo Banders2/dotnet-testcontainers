@@ -1,6 +1,8 @@
-namespace DotNet.Testcontainers.Configurations
+namespace DotNet.Testcontainers.Configurations.Images
 {
+  using System.Collections.Generic;
   using System.IO;
+  using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Images;
 
   /// <inheritdoc cref="IImageFromDockerfileConfiguration" />
@@ -25,12 +27,14 @@ namespace DotNet.Testcontainers.Configurations
       IDockerImage image,
       string dockerfile = "Dockerfile",
       string dockerfileDirectory = ".",
-      bool deleteIfExists = true)
+      bool deleteIfExists = true,
+      IReadOnlyDictionary<string, string> labels = null)
     {
       this.DeleteIfExists = deleteIfExists;
       this.Dockerfile = dockerfile;
       this.DockerfileDirectory = dockerfileDirectory;
       this.Image = image;
+      this.Labels = labels ?? DefaultLabels.Instance;
     }
 
     /// <inheritdoc />
@@ -44,6 +48,9 @@ namespace DotNet.Testcontainers.Configurations
 
     /// <inheritdoc />
     public IDockerImage Image { get; }
+
+    /// <inheritdoc />
+    public IReadOnlyDictionary<string, string> Labels { get; }
 
     private static IDockerImage CreateDockerImage()
     {

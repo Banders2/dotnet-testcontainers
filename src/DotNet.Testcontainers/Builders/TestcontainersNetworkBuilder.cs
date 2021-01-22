@@ -60,6 +60,12 @@
     }
 
     /// <inheritdoc />
+    public ITestcontainersNetworkBuilder WithResourceReaperSessionId(Guid? resourceReaperSessionId)
+    {
+      return this.WithLabel(ResourceReaper.ResourceReaperSessionLabel, resourceReaperSessionId?.ToString("D"));
+    }
+
+    /// <inheritdoc />
     public IDockerNetwork Build()
     {
       return new NonExistingDockerNetwork(this.configuration, TestcontainersSettings.Logger);

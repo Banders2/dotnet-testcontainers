@@ -17,7 +17,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       this.msSqlFixture = msSqlFixture;
     }
 
-    [Fact]
+    [IgnoreOnLinuxEngine]
     public async Task ConnectionEstablished()
     {
       // Given
@@ -31,21 +31,21 @@ namespace DotNet.Testcontainers.Tests.Unit
       Assert.Equal(ConnectionState.Open, connection.State);
     }
 
-    [Fact]
+    [IgnoreOnLinuxEngine]
     public void CannotSetDatabase()
     {
       var mssql = new MsSqlTestcontainerConfiguration();
       Assert.Throws<NotImplementedException>(() => mssql.Database = string.Empty);
     }
 
-    [Fact]
+    [IgnoreOnLinuxEngine]
     public void CannotSetUsername()
     {
       var mssql = new MsSqlTestcontainerConfiguration();
       Assert.Throws<NotImplementedException>(() => mssql.Username = string.Empty);
     }
 
-    [Fact]
+    [IgnoreOnLinuxEngine]
     public async Task ExecScriptInRunningContainer()
     {
       // Given
@@ -67,7 +67,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       Assert.Contains("MyName", result.Stdout);
     }
 
-    [Fact]
+    [IgnoreOnLinuxEngine]
     public async Task ThrowErrorInRunningContainerWithInvalidScript()
     {
       // Given

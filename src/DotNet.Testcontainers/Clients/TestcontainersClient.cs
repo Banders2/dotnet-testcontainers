@@ -3,10 +3,12 @@ namespace DotNet.Testcontainers.Clients
   using System;
   using System.Collections.Generic;
   using System.IO;
-  using System.Linq;
+  using System.Net;
   using System.Text;
   using System.Threading;
   using System.Threading.Tasks;
+  using Configurations.Containers;
+  using Configurations.Images;
   using Docker.DotNet;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Configurations;
@@ -17,13 +19,11 @@ namespace DotNet.Testcontainers.Clients
   /// <inheritdoc cref="ITestcontainersClient" />
   internal sealed class TestcontainersClient : ITestcontainersClient
   {
-    public const string TestcontainersLabel = "dotnet.testcontainers";
-
-    public const string TestcontainersCleanUpLabel = TestcontainersLabel + ".cleanUp";
-
     private readonly string osRootDirectory = Path.GetPathRoot(Directory.GetCurrentDirectory());
 
-    private readonly TestcontainersRegistryService registryService;
+    public const string TestcontainersLabel = "dotnet.testcontainers";
+
+    private readonly ILogger logger;
 
     private readonly IDockerContainerOperations containers;
 
@@ -48,23 +48,23 @@ namespace DotNet.Testcontainers.Clients
     /// <param name="logger">The logger.</param>
     public TestcontainersClient(Uri endpoint, ILogger logger)
       : this(
-        new TestcontainersRegistryService(),
         new DockerContainerOperations(endpoint, logger),
         new DockerImageOperations(endpoint, logger),
-        new DockerSystemOperations(endpoint, logger))
+        new DockerSystemOperations(endpoint, logger),
+        logger)
     {
     }
 
     private TestcontainersClient(
-      TestcontainersRegistryService registryService,
       IDockerContainerOperations containerOperations,
       IDockerImageOperations imageOperations,
-      IDockerSystemOperations systemOperations)
+      IDockerSystemOperations systemOperations,
+      ILogger logger)
     {
-      this.registryService = registryService;
       this.containers = containerOperations;
       this.images = imageOperations;
       this.system = systemOperations;
+      this.logger = logger;
     }
 
     /// <inheritdoc />
@@ -127,18 +127,11 @@ namespace DotNet.Testcontainers.Clients
           await this.containers.RemoveAsync(id, ct)
             .ConfigureAwait(false);
         }
-        catch (DockerApiException e)
+        catch (DockerApiException e) when (e.StatusCode == HttpStatusCode.Conflict)
         {
-          // The Docker daemon may already start the progress to removes the container (AutoRemove):
-          // https://docs.docker.com/engine/api/v1.41/#operation/ContainerCreate.
-          if (!e.Message.Contains($"removal of container {id} is already in progress"))
-          {
-            throw;
-          }
+          this.logger.LogDebug(e, "Conflict while trying to remove Container. This may happen if the container is started with the AutoRemove option.");
         }
       }
-
-      this.registryService.Unregister(id);
     }
 
     /// <inheritdoc />
@@ -193,11 +186,10 @@ namespace DotNet.Testcontainers.Clients
     /// <inheritdoc />
     public async Task<string> RunAsync(ITestcontainersConfiguration configuration, CancellationToken ct = default)
     {
-      // Killing or canceling the test process will prevent the cleanup.
-      // Remove labeled, orphaned containers from previous runs.
-      var removeOrphanedContainersTasks = (await this.containers.GetOrphanedObjects(ct)
-          .ConfigureAwait(false))
-        .Select(container => this.containers.RemoveAsync(container.ID, ct));
+      if (configuration.Labels.TryGetValue(ResourceReaper.ResourceReaperSessionLabel, out var resourceReaperSessionId) && !string.IsNullOrWhiteSpace(resourceReaperSessionId))
+      {
+        await ResourceReaper.GetOrStartDefaultAsync();
+      }
 
       if (!await this.images.ExistsWithNameAsync(configuration.Image.FullName, ct)
         .ConfigureAwait(false))
@@ -206,13 +198,8 @@ namespace DotNet.Testcontainers.Clients
           .ConfigureAwait(false);
       }
 
-      await Task.WhenAll(removeOrphanedContainersTasks)
-        .ConfigureAwait(false);
-
       var id = await this.containers.RunAsync(configuration, ct)
         .ConfigureAwait(false);
-
-      this.registryService.Register(id, configuration.CleanUp);
 
       return id;
     }

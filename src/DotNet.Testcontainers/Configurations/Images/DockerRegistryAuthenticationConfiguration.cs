@@ -1,4 +1,4 @@
-namespace DotNet.Testcontainers.Configurations
+namespace DotNet.Testcontainers.Configurations.Images
 {
   using System;
 

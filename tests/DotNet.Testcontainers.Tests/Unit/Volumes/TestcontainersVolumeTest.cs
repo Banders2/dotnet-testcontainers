@@ -10,37 +10,44 @@ namespace DotNet.Testcontainers.Tests.Unit
   [Collection(nameof(Testcontainers))]
   public sealed class TestcontainersVolumeTest : IClassFixture<VolumeFixture>, IAsyncLifetime
   {
+    private readonly VolumeFixture volumeFixture;
+
     private const string Destination = "/tmp/";
 
-    private readonly ITestcontainersContainer testcontainer1;
+    private ITestcontainersContainer testcontainer1;
 
-    private readonly ITestcontainersContainer testcontainer2;
+    private ITestcontainersContainer testcontainer2;
 
     public TestcontainersVolumeTest(VolumeFixture volumeFixture)
     {
+      this.volumeFixture = volumeFixture;
+    }
+
+    public Task InitializeAsync()
+    {
       var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
+        .WithResourceReaperSessionId(volumeFixture.ResourceReaperSessionId)
         .WithImage("alpine")
         .WithEntrypoint("/bin/sh", "-c")
         .WithCommand("touch /tmp/$(uname -n) && tail -f /dev/null")
         .WithVolumeMount(volumeFixture.Volume.Name, Destination);
 
       this.testcontainer1 = testcontainersBuilder
+        .WithResourceReaperSessionId(volumeFixture.ResourceReaperSessionId)
         .WithHostname(nameof(this.testcontainer1))
         .Build();
 
       this.testcontainer2 = testcontainersBuilder
+        .WithResourceReaperSessionId(volumeFixture.ResourceReaperSessionId)
         .WithHostname(nameof(this.testcontainer2))
         .Build();
-    }
 
-    public Task InitializeAsync()
-    {
       return Task.WhenAll(this.testcontainer1.StartAsync(), this.testcontainer2.StartAsync());
     }
 
     public Task DisposeAsync()
     {
-      return Task.WhenAll(this.testcontainer1.DisposeAsync().AsTask(), this.testcontainer2.DisposeAsync().AsTask());
+      return Task.CompletedTask;
     }
 
     [Fact]

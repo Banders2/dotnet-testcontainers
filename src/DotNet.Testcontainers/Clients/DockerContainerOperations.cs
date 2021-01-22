@@ -6,6 +6,7 @@ namespace DotNet.Testcontainers.Clients
   using System.Linq;
   using System.Threading;
   using System.Threading.Tasks;
+  using Configurations.Containers;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
@@ -24,13 +25,6 @@ namespace DotNet.Testcontainers.Clients
     public async Task<IEnumerable<ContainerListResponse>> GetAllAsync(CancellationToken ct = default)
     {
       return (await this.Docker.Containers.ListContainersAsync(new ContainersListParameters { All = true }, ct)
-        .ConfigureAwait(false)).ToArray();
-    }
-
-    public async Task<IEnumerable<ContainerListResponse>> GetOrphanedObjects(CancellationToken ct = default)
-    {
-      var filters = new FilterByProperty { { "label", $"{TestcontainersClient.TestcontainersCleanUpLabel}={bool.TrueString}" }, { "status", "exited" } };
-      return (await this.Docker.Containers.ListContainersAsync(new ContainersListParameters { All = true, Filters = filters }, ct)
         .ConfigureAwait(false)).ToArray();
     }
 
@@ -151,6 +145,8 @@ namespace DotNet.Testcontainers.Clients
 
       var hostConfig = new HostConfig
       {
+        AutoRemove = configuration.AutoRemove ?? false,
+        Privileged = configuration.Privileged ?? false,
         PortBindings = converter.PortBindings,
         Mounts = converter.Mounts,
       };

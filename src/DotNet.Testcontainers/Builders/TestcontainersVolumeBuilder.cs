@@ -53,6 +53,12 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
+    public ITestcontainersVolumeBuilder WithResourceReaperSessionId(Guid? resourceReaperSessionId)
+    {
+      return this.WithLabel(ResourceReaper.ResourceReaperSessionLabel, resourceReaperSessionId?.ToString("D"));
+    }
+
+    /// <inheritdoc />
     public IDockerVolume Build()
     {
       return new NonExistingDockerVolume(this.configuration, TestcontainersSettings.Logger);

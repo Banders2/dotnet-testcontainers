@@ -1,5 +1,6 @@
-namespace DotNet.Testcontainers.Configurations
+namespace DotNet.Testcontainers.Configurations.Images
 {
+  using System.Collections.Generic;
   using DotNet.Testcontainers.Images;
   using JetBrains.Annotations;
 
@@ -18,6 +19,12 @@ namespace DotNet.Testcontainers.Configurations
     /// </summary>
     [NotNull]
     string Dockerfile { get; }
+
+    /// <summary>
+    /// Gets the Labels.
+    /// </summary>
+    [NotNull]
+    IReadOnlyDictionary<string, string> Labels { get; }
 
     /// <summary>
     /// Gets the Dockerfile directory.

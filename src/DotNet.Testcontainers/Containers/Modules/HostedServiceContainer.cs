@@ -1,6 +1,6 @@
-namespace DotNet.Testcontainers.Containers
+namespace DotNet.Testcontainers.Containers.Modules
 {
-  using DotNet.Testcontainers.Configurations;
+  using DotNet.Testcontainers.Configurations.Containers;
   using JetBrains.Annotations;
   using Microsoft.Extensions.Logging;
 
