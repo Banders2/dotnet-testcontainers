@@ -4,8 +4,6 @@ namespace DotNet.Testcontainers.Containers
   using System.Text;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Configurations;
-  using DotNet.Testcontainers.Configurations.Containers;
-  using DotNet.Testcontainers.Containers.Modules;
   using JetBrains.Annotations;
   using Microsoft.Extensions.Logging;
 

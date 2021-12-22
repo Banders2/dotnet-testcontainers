@@ -2,7 +2,6 @@ namespace DotNet.Testcontainers.Clients
 {
   using System.Threading;
   using System.Threading.Tasks;
-  using Configurations.Images;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Images;

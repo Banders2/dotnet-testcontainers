@@ -1,4 +1,4 @@
-namespace DotNet.Testcontainers.Configurations.Containers
+namespace DotNet.Testcontainers.Configurations
 {
   using System;
   using System.Collections.Generic;
@@ -7,7 +7,6 @@ namespace DotNet.Testcontainers.Configurations.Containers
   using DotNet.Testcontainers.Containers;
   using DotNet.Testcontainers.Images;
   using DotNet.Testcontainers.Network;
-  using Images;
 
   /// <inheritdoc cref="ITestcontainersConfiguration" />
   public readonly struct TestcontainersConfiguration : ITestcontainersConfiguration
@@ -34,7 +33,8 @@ namespace DotNet.Testcontainers.Configurations.Containers
     /// <param name="outputConsumer">The output consumer.</param>
     /// <param name="waitStrategies">The wait strategies.</param>
     /// <param name="startupCallback">The startup callback.</param>
-    /// <param name="cleanUp">A value indicating whether the Testcontainer is removed on finalize or not.</param>
+    /// <param name="autoRemove">A value indicating whether the Testcontainer is removed by the Docker daemon or not.</param>
+    /// <param name="privileged">A value indicating whether the Testcontainer has extended  privilegesor not.</param>
     public TestcontainersConfiguration(
       Uri endpoint,
       IDockerRegistryAuthenticationConfiguration dockerRegistryAuthenticationConfigurations,

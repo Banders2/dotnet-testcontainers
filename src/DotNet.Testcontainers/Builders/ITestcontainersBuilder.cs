@@ -249,25 +249,25 @@ namespace DotNet.Testcontainers.Builders
     ITestcontainersBuilder<TDockerContainer> WithNetwork(IDockerNetwork dockerNetwork);
 
     /// <summary>
-    /// If true, Testcontainer will remove the Testcontainer on finalize. Otherwise, Testcontainer will keep the Testcontainer.
+    /// If true, the <see cref="ResourceReaper" /> will remove the stopped Testcontainer automatically. Otherwise, the Testcontainer will be kept.
     /// </summary>
-    /// <param name="cleanUp">True, Testcontainer will remove the Testcontainer on finalize. Otherwise, Testcontainer will keep it.</param>
+    /// <param name="cleanUp">True, the <see cref="ResourceReaper" /> will remove the stopped Testcontainer automatically. Otherwise, the Testcontainer will be kept.</param>
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
     [PublicAPI]
     ITestcontainersBuilder<TDockerContainer> WithCleanUp(bool cleanUp);
 
     /// <summary>
-    /// If true, the Testcontainer is removed automatically by the Docker daemon when stopped.
+    /// If true, the Docker daemon will remove the stopped Testcontainer automatically. Otherwise, the Testcontainer will be kept.
     /// </summary>
-    /// <param name="autoRemove">True, TestcontainerTestcontainer is removed automatically by the Docker daemon when stopped.</param>
+    /// <param name="autoRemove">True, the Docker daemon will remove the stopped Testcontainer automatically. Otherwise, the Testcontainer will be kept.</param>
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
     [PublicAPI]
     ITestcontainersBuilder<TDockerContainer> WithAutoRemove(bool autoRemove);
 
     /// <summary>
-    /// If true, the Testcontainer is removed automatically by the Docker daemon when stopped.
+    /// If true, the Testcontainer will get extended privileges. Otherwise, the Testcontainer will be unprivileged.
     /// </summary>
-    /// <param name="autoRemove">True, TestcontainerTestcontainer is removed automatically by the Docker daemon when stopped.</param>
+    /// <param name="privileged">The Testcontainer will get extended privileges. Otherwise, the Testcontainer will be unprivileged.</param>
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
     [PublicAPI]
     ITestcontainersBuilder<TDockerContainer> WithPrivileged(bool privileged);
@@ -318,13 +318,13 @@ namespace DotNet.Testcontainers.Builders
     ITestcontainersBuilder<TDockerContainer> WithStartupCallback(Func<IRunningDockerContainer, CancellationToken, Task> startupCallback);
 
     /// <summary>
-    /// Sets the resource reaper session id for this container.
-    /// The <see cref="ResourceReaper"/> will make sure to delete the container after the tests have finished if it was not deleted explicitly.
+    /// Sets the resource reaper session id.
     /// </summary>
-    /// <param name="resourceReaperSessionId">The session id of the <see cref="ResourceReaper"/> instance.</param>
+    /// <param name="resourceReaperSessionId">The session id of the <see cref="ResourceReaper" /> instance.</param>
     /// <returns>A configured instance of <see cref="ITestcontainersBuilder{TDockerContainer}" />.</returns>
+    /// <remarks>The <see cref="ResourceReaper" /> will delete the resource after the tests has been finished.</remarks>
     [PublicAPI]
-    ITestcontainersBuilder<TDockerContainer> WithResourceReaperSessionId(Guid? resourceReaperSessionId);
+    ITestcontainersBuilder<TDockerContainer> WithResourceReaperSessionId(Guid resourceReaperSessionId);
 
     /// <summary>
     /// Builds the instance of <see cref="ITestcontainersContainer" /> with the given configuration.

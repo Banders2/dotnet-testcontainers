@@ -1,4 +1,4 @@
-namespace DotNet.Testcontainers.Configurations.Images
+namespace DotNet.Testcontainers.Configurations
 {
   using System;
   using JetBrains.Annotations;

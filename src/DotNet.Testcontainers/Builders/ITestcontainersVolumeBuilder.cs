@@ -36,12 +36,13 @@ namespace DotNet.Testcontainers.Builders
     ITestcontainersVolumeBuilder WithLabel(string name, string value);
 
     /// <summary>
-    /// Sets the resource reaper session id for this volume.
-    /// The <see cref="ResourceReaper"/> will make sure to delete the volume after the tests have finished if it was not deleted explicitly.
+    /// Sets the resource reaper session id.
     /// </summary>
-    /// <param name="resourceReaperSessionId">The session id of the <see cref="ResourceReaper"/> instance.</param>
-    /// <returns>A configured instance of <see cref="ITestcontainersVolumeBuilder" />.</returns>
-    ITestcontainersVolumeBuilder WithResourceReaperSessionId(Guid? resourceReaperSessionId);
+    /// <param name="resourceReaperSessionId">The session id of the <see cref="ResourceReaper" /> instance.</param>
+    /// <returns>A configured instance of <see cref="IImageFromDockerfileBuilder" />.</returns>
+    /// <remarks>The <see cref="ResourceReaper" /> will delete the resource after the tests has been finished.</remarks>
+    [PublicAPI]
+    ITestcontainersVolumeBuilder WithResourceReaperSessionId(Guid resourceReaperSessionId);
 
     /// <summary>
     /// Builds the instance of <see cref="IDockerVolume" /> with the given configuration.

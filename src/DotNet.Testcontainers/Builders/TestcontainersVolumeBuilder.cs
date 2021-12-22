@@ -53,9 +53,9 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
-    public ITestcontainersVolumeBuilder WithResourceReaperSessionId(Guid? resourceReaperSessionId)
+    public ITestcontainersVolumeBuilder WithResourceReaperSessionId(Guid resourceReaperSessionId)
     {
-      return this.WithLabel(ResourceReaper.ResourceReaperSessionLabel, resourceReaperSessionId?.ToString("D"));
+      return this.WithLabel(ResourceReaper.ResourceReaperSessionLabel, resourceReaperSessionId.ToString("D"));
     }
 
     /// <inheritdoc />

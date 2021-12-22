@@ -1,4 +1,4 @@
-namespace DotNet.Testcontainers.Configurations.Images
+namespace DotNet.Testcontainers.Configurations
 {
   using System.Collections.Generic;
   using DotNet.Testcontainers.Images;
@@ -21,12 +21,6 @@ namespace DotNet.Testcontainers.Configurations.Images
     string Dockerfile { get; }
 
     /// <summary>
-    /// Gets the Labels.
-    /// </summary>
-    [NotNull]
-    IReadOnlyDictionary<string, string> Labels { get; }
-
-    /// <summary>
     /// Gets the Dockerfile directory.
     /// </summary>
     [NotNull]
@@ -37,5 +31,11 @@ namespace DotNet.Testcontainers.Configurations.Images
     /// </summary>
     [NotNull]
     IDockerImage Image { get; }
+
+    /// <summary>
+    /// Gets a list of labels.
+    /// </summary>
+    [NotNull]
+    IReadOnlyDictionary<string, string> Labels { get; }
   }
 }

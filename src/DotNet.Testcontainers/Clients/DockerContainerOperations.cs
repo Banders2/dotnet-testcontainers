@@ -6,7 +6,6 @@ namespace DotNet.Testcontainers.Clients
   using System.Linq;
   using System.Threading;
   using System.Threading.Tasks;
-  using Configurations.Containers;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
@@ -145,8 +144,8 @@ namespace DotNet.Testcontainers.Clients
 
       var hostConfig = new HostConfig
       {
-        AutoRemove = configuration.AutoRemove ?? false,
-        Privileged = configuration.Privileged ?? false,
+        AutoRemove = configuration.AutoRemove.HasValue && configuration.AutoRemove.Value,
+        Privileged = configuration.Privileged.HasValue && configuration.Privileged.Value,
         PortBindings = converter.PortBindings,
         Mounts = converter.Mounts,
       };

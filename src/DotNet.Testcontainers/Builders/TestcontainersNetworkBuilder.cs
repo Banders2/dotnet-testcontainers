@@ -20,8 +20,8 @@
       : this(
         Apply(
           endpoint: TestcontainersSettings.OS.DockerApiEndpoint,
-          labels: DefaultLabels.Instance,
-          driver: NetworkDriver.Bridge))
+          driver: NetworkDriver.Bridge,
+          labels: DefaultLabels.Instance))
     {
     }
 
@@ -60,9 +60,9 @@
     }
 
     /// <inheritdoc />
-    public ITestcontainersNetworkBuilder WithResourceReaperSessionId(Guid? resourceReaperSessionId)
+    public ITestcontainersNetworkBuilder WithResourceReaperSessionId(Guid resourceReaperSessionId)
     {
-      return this.WithLabel(ResourceReaper.ResourceReaperSessionLabel, resourceReaperSessionId?.ToString("D"));
+      return this.WithLabel(ResourceReaper.ResourceReaperSessionLabel, resourceReaperSessionId.ToString("D"));
     }
 
     /// <inheritdoc />

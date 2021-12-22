@@ -8,8 +8,6 @@ namespace DotNet.Testcontainers.Builders
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Configurations;
-  using DotNet.Testcontainers.Configurations.Containers;
-  using DotNet.Testcontainers.Configurations.Images;
   using DotNet.Testcontainers.Containers;
   using DotNet.Testcontainers.Images;
   using DotNet.Testcontainers.Network;
@@ -57,7 +55,9 @@ namespace DotNet.Testcontainers.Builders
           labels: DefaultLabels.Instance,
           outputConsumer: Consume.DoNotConsumeStdoutAndStderr(),
           waitStrategies: Wait.ForUnixContainer().Build(),
-          startupCallback: (testcontainers, ct) => Task.CompletedTask),
+          startupCallback: (testcontainers, ct) => Task.CompletedTask,
+          autoRemove: false,
+          privileged: false),
         _ => { })
     {
     }
@@ -237,17 +237,7 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc />
     public ITestcontainersBuilder<TDockerContainer> WithCleanUp(bool cleanUp)
     {
-      if (cleanUp)
-      {
-        if (string.IsNullOrWhiteSpace(this.configuration.Labels[ResourceReaper.ResourceReaperSessionLabel]))
-        {
-          return this.WithResourceReaperSessionId(ResourceReaper.DefaultSessionId);
-        }
-
-        return this;
-      }
-
-      return this.WithResourceReaperSessionId(null);
+      return this.WithResourceReaperSessionId(cleanUp ? ResourceReaper.DefaultSessionId : Guid.Empty);
     }
 
     /// <inheritdoc />
@@ -293,9 +283,9 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
-    public ITestcontainersBuilder<TDockerContainer> WithResourceReaperSessionId(Guid? resourceReaperSessionId)
+    public ITestcontainersBuilder<TDockerContainer> WithResourceReaperSessionId(Guid resourceReaperSessionId)
     {
-      return this.WithLabel(ResourceReaper.ResourceReaperSessionLabel, resourceReaperSessionId?.ToString("D"));
+      return this.WithLabel(ResourceReaper.ResourceReaperSessionLabel, resourceReaperSessionId.ToString("D"));
     }
 
     /// <inheritdoc />

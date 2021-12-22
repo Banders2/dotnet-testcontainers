@@ -5,7 +5,6 @@ namespace DotNet.Testcontainers.Containers
   using System.Linq;
   using System.Threading;
   using System.Threading.Tasks;
-  using Configurations.Containers;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Configurations;
@@ -217,7 +216,8 @@ namespace DotNet.Testcontainers.Containers
         return;
       }
 
-      await this.StopAsync().ConfigureAwait(false);
+      await this.StopAsync()
+        .ConfigureAwait(false);
 
       this.semaphoreSlim.Dispose();
 

@@ -2,7 +2,7 @@ namespace DotNet.Testcontainers.Clients
 {
   using System.Collections.Generic;
   using System.Collections.ObjectModel;
-  using Configurations;
+  using DotNet.Testcontainers.Configurations;
 
   internal sealed class DefaultLabels : ReadOnlyDictionary<string, string>
   {
@@ -10,7 +10,7 @@ namespace DotNet.Testcontainers.Clients
       : base(new Dictionary<string, string>
       {
         { TestcontainersClient.TestcontainersLabel, bool.TrueString },
-        { ResourceReaper.ResourceReaperSessionLabel, ResourceReaper.DefaultSessionId.ToString("D") }
+        { ResourceReaper.ResourceReaperSessionLabel, ResourceReaper.DefaultSessionId.ToString("D") },
       })
     {
     }

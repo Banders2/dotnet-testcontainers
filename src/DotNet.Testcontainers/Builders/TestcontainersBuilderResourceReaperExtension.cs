@@ -1,10 +1,13 @@
 namespace DotNet.Testcontainers.Builders
 {
-  using DotNet.Testcontainers.Containers.Modules.Misc;
+  using DotNet.Testcontainers.Configurations;
+  using DotNet.Testcontainers.Containers;
+  using JetBrains.Annotations;
 
   /// <summary>
   /// This class applies the extended Testcontainer configurations for the resource reaper.
   /// </summary>
+  [PublicAPI]
   public static class TestcontainersBuilderResourceReaperExtension
   {
     public static ITestcontainersBuilder<T> WithResourceReaper<T>(this ITestcontainersBuilder<T> builder, ResourceReaperContainerConfiguration configuration)
@@ -18,7 +21,7 @@ namespace DotNet.Testcontainers.Builders
         .WithPortBinding(configuration.Port, configuration.DefaultPort)
         .WithExposedPort(configuration.DefaultPort)
         .WithWaitStrategy(configuration.WaitStrategy)
-        .WithMount(configuration.HostDockerSocketPath, "/var/run/docker.sock");
+        .WithBindMount(configuration.HostDockerSocketPath, "/var/run/docker.sock", AccessMode.ReadOnly);
     }
   }
 }

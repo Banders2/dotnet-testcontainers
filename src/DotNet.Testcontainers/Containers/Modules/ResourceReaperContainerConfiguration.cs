@@ -1,4 +1,4 @@
-namespace DotNet.Testcontainers.Containers.Modules.Misc
+namespace DotNet.Testcontainers.Containers
 {
   using System;
   using DotNet.Testcontainers.Builders;

@@ -44,13 +44,13 @@
     ITestcontainersNetworkBuilder WithLabel(string name, string value);
 
     /// <summary>
-    /// Sets the resource reaper session id for this network.
-    /// The <see cref="ResourceReaper"/> will make sure to delete the network after the tests have finished if it was not deleted explicitly.
+    /// Sets the resource reaper session id.
     /// </summary>
-    /// <param name="resourceReaperSessionId">The session id of the <see cref="ResourceReaper"/> instance.</param>
-    /// <returns>A configured instance of <see cref="ITestcontainersNetworkBuilder" />.</returns>
+    /// <param name="resourceReaperSessionId">The session id of the <see cref="ResourceReaper" /> instance.</param>
+    /// <returns>A configured instance of <see cref="IImageFromDockerfileBuilder" />.</returns>
+    /// <remarks>The <see cref="ResourceReaper" /> will delete the resource after the tests has been finished.</remarks>
     [PublicAPI]
-    ITestcontainersNetworkBuilder WithResourceReaperSessionId(Guid? resourceReaperSessionId);
+    ITestcontainersNetworkBuilder WithResourceReaperSessionId(Guid resourceReaperSessionId);
 
     /// <summary>
     /// Builds the instance of <see cref="IDockerNetwork" /> with the given configuration.

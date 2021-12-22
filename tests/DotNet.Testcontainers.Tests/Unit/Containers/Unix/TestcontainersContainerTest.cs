@@ -17,7 +17,8 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
 
   public static class TestcontainersContainerTest
   {
-    private static readonly string TempDir = Environment.GetEnvironmentVariable("AGENT_TEMPDIRECTORY") ?? Directory.GetCurrentDirectory(); // We cannot use `Path.GetTempPath()` on macOS, see: https://github.com/common-workflow-language/cwltool/issues/328.
+    // We cannot use `Path.GetTempPath()` on macOS, see: https://github.com/common-workflow-language/cwltool/issues/328.
+    private static readonly string TempDir = Environment.GetEnvironmentVariable("AGENT_TEMPDIRECTORY") ?? Directory.GetCurrentDirectory();
 
     [Collection(nameof(Testcontainers))]
     public sealed class WithConfiguration
@@ -84,7 +85,7 @@ namespace DotNet.Testcontainers.Tests.Unit.Containers.Unix
       public async Task SpecifiedContainerName()
       {
         // Given
-        var name = Guid.NewGuid().ToString("N");
+        var name = Guid.NewGuid().ToString("D");
 
         // When
         var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()

@@ -2,7 +2,7 @@ namespace DotNet.Testcontainers.Builders
 {
   using System;
   using System.Threading.Tasks;
-  using Configurations;
+  using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Images;
   using JetBrains.Annotations;
 
@@ -52,21 +52,22 @@ namespace DotNet.Testcontainers.Builders
     IImageFromDockerfileBuilder WithDeleteIfExists(bool deleteIfExists);
 
     /// <summary>
-    /// Add a label to the resulting image.
+    /// Adds user-defined metadata to the Docker volume.
     /// </summary>
-    /// <param name="labelName">Name of the label.</param>
-    /// <param name="value">Value of the label.</param>
+    /// <param name="name">Label name.</param>
+    /// <param name="value">Label value.</param>
     /// <returns>A configured instance of <see cref="IImageFromDockerfileBuilder" />.</returns>
     [PublicAPI]
-    IImageFromDockerfileBuilder WithLabel(string labelName, string value);
+    IImageFromDockerfileBuilder WithLabel(string name, string value);
 
     /// <summary>
-    /// Sets the resource reaper session id for this image.
-    /// The <see cref="ResourceReaper"/> will make sure to delete the image after the tests have finished if it was not deleted explicitly.
+    /// Sets the resource reaper session id.
     /// </summary>
-    /// <param name="resourceReaperSessionId">The session id of the <see cref="ResourceReaper"/> instance.</param>
+    /// <param name="resourceReaperSessionId">The session id of the <see cref="ResourceReaper" /> instance.</param>
+    /// <returns>A configured instance of <see cref="IImageFromDockerfileBuilder" />.</returns>
+    /// <remarks>The <see cref="ResourceReaper" /> will delete the resource after the tests has been finished.</remarks>
     [PublicAPI]
-    IImageFromDockerfileBuilder WithResourceReaperSessionId(Guid? resourceReaperSessionId);
+    IImageFromDockerfileBuilder WithResourceReaperSessionId(Guid resourceReaperSessionId);
 
     /// <summary>
     /// Builds the instance of <see cref="IImageFromDockerfileBuilder" /> with the given configuration.

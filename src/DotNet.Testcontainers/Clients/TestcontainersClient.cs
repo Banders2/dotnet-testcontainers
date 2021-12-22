@@ -7,8 +7,6 @@ namespace DotNet.Testcontainers.Clients
   using System.Text;
   using System.Threading;
   using System.Threading.Tasks;
-  using Configurations.Containers;
-  using Configurations.Images;
   using Docker.DotNet;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Configurations;
@@ -19,11 +17,9 @@ namespace DotNet.Testcontainers.Clients
   /// <inheritdoc cref="ITestcontainersClient" />
   internal sealed class TestcontainersClient : ITestcontainersClient
   {
-    private readonly string osRootDirectory = Path.GetPathRoot(Directory.GetCurrentDirectory());
-
     public const string TestcontainersLabel = "dotnet.testcontainers";
 
-    private readonly ILogger logger;
+    private readonly string osRootDirectory = Path.GetPathRoot(Directory.GetCurrentDirectory());
 
     private readonly IDockerContainerOperations containers;
 
@@ -50,21 +46,18 @@ namespace DotNet.Testcontainers.Clients
       : this(
         new DockerContainerOperations(endpoint, logger),
         new DockerImageOperations(endpoint, logger),
-        new DockerSystemOperations(endpoint, logger),
-        logger)
+        new DockerSystemOperations(endpoint, logger))
     {
     }
 
     private TestcontainersClient(
       IDockerContainerOperations containerOperations,
       IDockerImageOperations imageOperations,
-      IDockerSystemOperations systemOperations,
-      ILogger logger)
+      IDockerSystemOperations systemOperations)
     {
       this.containers = containerOperations;
       this.images = imageOperations;
       this.system = systemOperations;
-      this.logger = logger;
     }
 
     /// <inheritdoc />
@@ -127,9 +120,14 @@ namespace DotNet.Testcontainers.Clients
           await this.containers.RemoveAsync(id, ct)
             .ConfigureAwait(false);
         }
-        catch (DockerApiException e) when (e.StatusCode == HttpStatusCode.Conflict)
+        catch (DockerApiException e)
         {
-          this.logger.LogDebug(e, "Conflict while trying to remove Container. This may happen if the container is started with the AutoRemove option.");
+          // The Docker daemon may already start the progress to removes the container (AutoRemove):
+          // https://docs.docker.com/engine/api/v1.41/#operation/ContainerCreate.
+          if (!e.Message.Contains($"removal of container {id} is already in progress"))
+          {
+            throw;
+          }
         }
       }
     }
@@ -186,9 +184,10 @@ namespace DotNet.Testcontainers.Clients
     /// <inheritdoc />
     public async Task<string> RunAsync(ITestcontainersConfiguration configuration, CancellationToken ct = default)
     {
-      if (configuration.Labels.TryGetValue(ResourceReaper.ResourceReaperSessionLabel, out var resourceReaperSessionId) && !string.IsNullOrWhiteSpace(resourceReaperSessionId))
+      if (!Guid.Empty.ToString().Equals(configuration.Labels[ResourceReaper.ResourceReaperSessionLabel], StringComparison.OrdinalIgnoreCase))
       {
-        await ResourceReaper.GetOrStartDefaultAsync();
+        _ = await ResourceReaper.GetOrStartDefaultAsync()
+          .ConfigureAwait(false);
       }
 
       if (!await this.images.ExistsWithNameAsync(configuration.Image.FullName, ct)

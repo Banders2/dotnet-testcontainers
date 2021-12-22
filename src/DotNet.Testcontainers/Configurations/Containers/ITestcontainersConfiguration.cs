@@ -1,10 +1,9 @@
-namespace DotNet.Testcontainers.Configurations.Containers
+namespace DotNet.Testcontainers.Configurations
 {
   using System;
   using System.Collections.Generic;
   using System.Threading;
   using System.Threading.Tasks;
-  using DotNet.Testcontainers.Configurations.Images;
   using DotNet.Testcontainers.Containers;
   using DotNet.Testcontainers.Images;
   using DotNet.Testcontainers.Network;
@@ -16,13 +15,15 @@ namespace DotNet.Testcontainers.Configurations.Containers
   public interface ITestcontainersConfiguration
   {
     /// <summary>
-    /// If true, the Testcontainer is removed automatically by the Docker daemon when stopped.
+    /// Gets a value indicating whether the Testcontainer is removed by the Docker daemon or not.
     /// </summary>
+    [CanBeNull]
     bool? AutoRemove { get; }
 
     /// <summary>
-    /// If true, the Testcontainer will be started in privileged mode.
+    /// Gets a value indicating whether the Testcontainer has extended privileges or not.
     /// </summary>
+    [CanBeNull]
     bool? Privileged { get; }
 
     /// <summary>

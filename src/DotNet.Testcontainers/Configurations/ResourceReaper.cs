@@ -8,7 +8,7 @@ namespace DotNet.Testcontainers.Configurations
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Clients;
-  using DotNet.Testcontainers.Containers.Modules.Misc;
+  using DotNet.Testcontainers.Containers;
   using Microsoft.Extensions.Logging;
 
   public class ResourceReaper : IAsyncDisposable

@@ -28,7 +28,7 @@ namespace DotNet.Testcontainers.Tests.Fixtures
 
     public override async Task DisposeAsync()
     {
-      this.Connection?.Dispose();
+      this.Connection.Dispose();
 
       await this.Container.DisposeAsync()
         .ConfigureAwait(false);
